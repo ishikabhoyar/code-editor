@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realtime-editor-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: realtime-editor-backend
+  template:
+    metadata:
+      labels:
+        app: realtime-editor-backend
+    spec:
+      containers:
+        - name: backend
+          image: realtime-editor-backend:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/realtime_editor?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+            - name: APP_JWT_SECRET
+              value: change-this-secret-to-a-long-random-value-at-least-32-characters
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: realtime-editor-backend
+spec:
+  selector:
+    app: realtime-editor-backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
