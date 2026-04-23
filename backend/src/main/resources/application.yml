@@ -9,8 +9,6 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:void_user}
     password: ${SPRING_DATASOURCE_PASSWORD:change_me}
     driver-class-name: org.postgresql.Driver
-    hikari:
-      connection-init-sql: SET search_path TO void_app
   jpa:
     hibernate:
       ddl-auto: update
