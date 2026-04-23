@@ -1,17 +1,18 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: realtime-editor-mysql
+  postgres:
+    image: postgres:16
+    container_name: realtime-editor-postgres
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: realtime_editor
+      POSTGRES_USER: realtimeeditor
+      POSTGRES_PASSWORD: realtimeeditor
+      POSTGRES_DB: realtime_editor
     ports:
-      - "3306:3306"
+      - "5432:5432"
     networks:
       - realtime-editor-net
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
 
   backend:
     build:
@@ -19,15 +20,16 @@ services:
     container_name: realtime-editor-backend
     restart: unless-stopped
     depends_on:
-      - mysql
+      - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/realtime_editor?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/realtime_editor
+      SPRING_DATASOURCE_USERNAME: realtimeeditor
+      SPRING_DATASOURCE_PASSWORD: realtimeeditor
       APP_JWT_SECRET: change-this-secret-to-a-long-random-value-at-least-32-characters
       APP_CORS_ALLOWED_ORIGINS: http://localhost:3000
+      SERVER_PORT: 17808
     ports:
-      - "8080:8080"
+      - "17808:17808"
     networks:
       - realtime-editor-net
 
@@ -36,4 +38,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
+  postgres_data:

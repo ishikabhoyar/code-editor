@@ -16,7 +16,7 @@ spec:
         - name: backend
           image: realtime-editor-backend:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 17808
           resources:
             limits:
               cpu: "500m"
@@ -25,12 +25,14 @@ spec:
               cpu: "250m"
               memory: "256Mi"
           env:
+            - name: SERVER_PORT
+              value: "17808"
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://mysql:3306/realtime_editor?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+              value: jdbc:postgresql://postgres:5432/realtime_editor
             - name: SPRING_DATASOURCE_USERNAME
-              value: root
+              value: realtimeeditor
             - name: SPRING_DATASOURCE_PASSWORD
-              value: root
+              value: realtimeeditor
             - name: APP_JWT_SECRET
               value: change-this-secret-to-a-long-random-value-at-least-32-characters
 ---
@@ -42,6 +44,6 @@ spec:
   selector:
     app: realtime-editor-backend
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 17808
+      targetPort: 17808
   type: ClusterIP
