@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import {
+  apiBaseUrl,
   executeCode,
   loadDocument,
   saveDocument,
