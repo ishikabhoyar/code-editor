@@ -54,7 +54,16 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentResponse load(String ownerEmail, Long documentId) {
-        return map(ensureAccess(ownerEmail, documentId));
+        // Any authenticated user can load a document by ID (collaboration via shared URL)
+        DocumentEntity document = findDocument(documentId);
+        // Auto-add them as a collaborator if not already
+        AppUserEntity user = getUser(ownerEmail);
+        if (!document.getOwnerEmail().equalsIgnoreCase(ownerEmail)
+                && !document.getCollaborators().contains(user.getName())) {
+            document.getCollaborators().add(user.getName());
+            documentRepository.save(document);
+        }
+        return map(document);
     }
 
     @Override
