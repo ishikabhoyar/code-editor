@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { apiBaseUrl, createDocument, deleteDocument, listDocuments } from "../../lib/api";
+import { createDocument, deleteDocument, listDocuments } from "../../lib/api";
 import { clearSession, getStoredSession } from "../../lib/auth";
 import { DocumentResponse, UserSession } from "../../lib/types";
 
@@ -100,18 +100,10 @@ export default function DocumentsPage() {
       <div className="mx-auto w-full max-w-6xl rounded-[30px] border border-(--border) bg-white/85 p-7 shadow-sm">
         <header className="flex flex-col gap-4 border-b border-(--border) pb-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-(--muted)">
-              Documents
+            <h1 className="text-2xl font-semibold">Documents</h1>
+            <p className="mt-1 text-sm text-(--muted)">
+              Signed in as {session?.name}
             </p>
-            <h1 className="mt-2 text-3xl font-semibold">Choose or create a document</h1>
-            <p className="mt-2 text-sm text-(--muted)">
-              Step 2 of 3: Manage your document list before entering the editor.
-            </p>
-            <p className="mt-1 text-xs text-(--muted)">
-              Signed in as {session?.name} ({session?.email})
-            </p>
-            <p className="mt-1 text-xs text-(--muted)">Backend base URL: {apiBaseUrl()}</p>
-          </div>
 
           <div className="flex flex-wrap gap-2">
             <button
