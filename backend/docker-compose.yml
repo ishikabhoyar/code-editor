@@ -12,11 +12,12 @@ services:
     networks:
       - realtime-editor-net
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - /vm-storage/projects/code-editor/backend/.docker/postgres:/var/lib/postgresql/data
 
   backend:
     build:
-      context: .
+      context: /vm-storage/projects/code-editor/backend
+      dockerfile: /vm-storage/projects/code-editor/backend/Dockerfile
     container_name: realtime-editor-backend
     restart: unless-stopped
     depends_on:
@@ -36,6 +37,3 @@ services:
 networks:
   realtime-editor-net:
     driver: bridge
-
-volumes:
-  postgres_data:
