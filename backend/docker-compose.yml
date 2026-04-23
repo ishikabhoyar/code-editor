@@ -8,7 +8,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5433/void_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5433/void_db?currentSchema=void_app
       SPRING_DATASOURCE_USERNAME: void_user
       SPRING_DATASOURCE_PASSWORD: change_me
       APP_JWT_SECRET: change-this-secret-to-a-long-random-value-at-least-32-characters

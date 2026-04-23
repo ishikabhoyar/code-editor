@@ -5,7 +5,7 @@ spring:
   application:
     name: realtime-collaborative-code-editor-backend
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/void_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/void_db?currentSchema=void_app}
     username: ${SPRING_DATASOURCE_USERNAME:void_user}
     password: ${SPRING_DATASOURCE_PASSWORD:change_me}
     driver-class-name: org.postgresql.Driver
@@ -17,6 +17,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: void_app
   jackson:
     serialization:
       write-dates-as-timestamps: false
