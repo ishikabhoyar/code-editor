@@ -104,6 +104,7 @@ export default function DocumentsPage() {
             <p className="mt-1 text-sm text-(--muted)">
               Signed in as {session?.name}
             </p>
+          </div>
 
           <div className="flex flex-wrap gap-2">
             <button
