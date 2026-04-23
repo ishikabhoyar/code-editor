@@ -31,7 +31,7 @@ app:
   execution:
     timeout-seconds: ${APP_EXECUTION_TIMEOUT_SECONDS:5}
   cors:
-    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000,https://code-editor.arnabbhowmik.in}
 
 management:
   endpoints:
