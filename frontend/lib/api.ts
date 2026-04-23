@@ -167,6 +167,9 @@ function toSandboxLanguage(lang: string): string {
   switch (lang) {
     case "Java": return "java";
     case "JavaScript": return "javascript";
+    case "Python": return "python";
+    case "C": return "c";
+    case "C++": return "cpp";
     default: return lang.toLowerCase();
   }
 }

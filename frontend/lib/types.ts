@@ -26,7 +26,7 @@ export type DocumentResponse = {
   title: string;
   ownerName: string;
   ownerEmail: string;
-  language: "Java" | "HTML" | "JavaScript";
+  language: "Java" | "HTML" | "JavaScript" | "Python" | "C" | "C++";
   content: string;
   collaborators: string[];
   updatedAt: string;

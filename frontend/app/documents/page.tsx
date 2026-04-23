@@ -12,7 +12,7 @@ export default function DocumentsPage() {
   const [session, setSession] = useState<UserSession | null>(null);
   const [documents, setDocuments] = useState<DocumentResponse[]>([]);
   const [title, setTitle] = useState("Document-1.java");
-  const [language, setLanguage] = useState<"Java" | "HTML" | "JavaScript">("Java");
+  const [language, setLanguage] = useState<"Java" | "HTML" | "JavaScript" | "Python" | "C" | "C++">("Java");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [joinCode, setJoinCode] = useState("");
@@ -145,12 +145,15 @@ export default function DocumentsPage() {
                   className="w-full rounded-2xl border border-(--border) bg-white px-4 py-3 outline-none"
                   value={language}
                   onChange={(event) =>
-                    setLanguage(event.target.value as "Java" | "HTML" | "JavaScript")
+                    setLanguage(event.target.value as "Java" | "HTML" | "JavaScript" | "Python" | "C" | "C++")
                   }
                 >
                   <option value="Java">Java</option>
-                  <option value="HTML">HTML</option>
                   <option value="JavaScript">JavaScript</option>
+                  <option value="Python">Python</option>
+                  <option value="C">C</option>
+                  <option value="C++">C++</option>
+                  <option value="HTML">HTML</option>
                 </select>
               </label>
 

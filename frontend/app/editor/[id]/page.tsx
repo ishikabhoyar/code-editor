@@ -25,6 +25,9 @@ function toMonacoLang(lang: string): string {
     case "Java": return "java";
     case "JavaScript": return "javascript";
     case "HTML": return "html";
+    case "Python": return "python";
+    case "C": return "c";
+    case "C++": return "cpp";
     default: return "plaintext";
   }
 }
@@ -382,8 +385,11 @@ export default function EditorPage() {
                 onChange={(e) => handleLanguageChange(e.target.value)}
               >
                 <option value="Java">Java</option>
-                <option value="HTML">HTML</option>
                 <option value="JavaScript">JavaScript</option>
+                <option value="Python">Python</option>
+                <option value="C">C</option>
+                <option value="C++">C++</option>
+                <option value="HTML">HTML</option>
               </select>
               <button
                 type="button"
@@ -420,10 +426,10 @@ export default function EditorPage() {
 
             <div className="mt-4 space-y-2 text-sm">
               <span className="text-(--muted)">Code</span>
-              <div className="overflow-hidden rounded-3xl border border-(--border)" style={{ height: 420 }}>
+              <div className="overflow-hidden rounded-3xl border border-(--border)" style={{ height: 640 }}>
                 {document ? (
                   <MonacoEditor
-                    height={420}
+                    height={640}
                     language={toMonacoLang(document.language)}
                     defaultValue={document.content}
                     onMount={handleEditorMount}
@@ -458,20 +464,9 @@ export default function EditorPage() {
                   {runStatus}
                 </span>
               </div>
-              <div className="mt-3 space-y-3 text-sm">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-(--muted)">stdout</p>
-                  <pre className="mt-1 whitespace-pre-wrap rounded-2xl border border-(--border) bg-(--panel) p-3 font-mono text-[12px]">
-{stdout}
-                  </pre>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-(--muted)">stderr</p>
-                  <pre className="mt-1 whitespace-pre-wrap rounded-2xl border border-(--border) bg-(--panel) p-3 font-mono text-[12px]">
-{stderr || "No stderr captured."}
-                  </pre>
-                </div>
-              </div>
+              <pre className="mt-3 whitespace-pre-wrap rounded-2xl border border-(--border) bg-(--panel) p-3 font-mono text-[12px]">
+{stdout || "Output will appear here after execution."}
+              </pre>
             </div>
 
             {/* Session */}
