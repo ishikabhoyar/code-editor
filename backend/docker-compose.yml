@@ -1,39 +1,18 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: realtime-editor-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: realtimeeditor
-      POSTGRES_PASSWORD: realtimeeditor
-      POSTGRES_DB: realtime_editor
-    ports:
-      - "5432:5432"
-    networks:
-      - realtime-editor-net
-    volumes:
-      - /vm-storage/projects/code-editor/backend/.docker/postgres:/var/lib/postgresql/data
-
   backend:
     build:
       context: /vm-storage/projects/code-editor/backend
       dockerfile: /vm-storage/projects/code-editor/backend/Dockerfile
     container_name: realtime-editor-backend
     restart: unless-stopped
-    depends_on:
-      - postgres
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/realtime_editor
-      SPRING_DATASOURCE_USERNAME: realtimeeditor
-      SPRING_DATASOURCE_PASSWORD: realtimeeditor
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5433/void_db
+      SPRING_DATASOURCE_USERNAME: void_user
+      SPRING_DATASOURCE_PASSWORD: change_me
       APP_JWT_SECRET: change-this-secret-to-a-long-random-value-at-least-32-characters
       APP_CORS_ALLOWED_ORIGINS: http://localhost:3000
       SERVER_PORT: 17808
     ports:
       - "17808:17808"
-    networks:
-      - realtime-editor-net
-
-networks:
-  realtime-editor-net:
-    driver: bridge
