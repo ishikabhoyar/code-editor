@@ -15,6 +15,8 @@ export default function DocumentsPage() {
   const [language, setLanguage] = useState<"Java" | "HTML" | "JavaScript">("Java");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [joinCode, setJoinCode] = useState("");
+  const [joinCodeError, setJoinCodeError] = useState("");
 
   useEffect(() => {
     const existing = getStoredSession();
@@ -82,6 +84,15 @@ export default function DocumentsPage() {
   function handleLogout() {
     clearSession();
     router.replace("/login");
+  }
+
+  function handleJoinByCode() {
+    const id = parseInt(joinCode.trim(), 10);
+    if (!Number.isFinite(id) || id <= 0) {
+      setJoinCodeError("Enter a valid team code.");
+      return;
+    }
+    router.push(`/editor/${id}`);
   }
 
   return (
@@ -157,6 +168,27 @@ export default function DocumentsPage() {
               >
                 Create and open editor
               </button>
+
+              <div className="border-t border-(--border) pt-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-(--muted)">Join with team code</p>
+                <div className="mt-3 flex gap-2">
+                  <input
+                    className="flex-1 rounded-2xl border border-(--border) bg-white px-4 py-3 font-mono text-sm outline-none"
+                    placeholder="e.g. 000042"
+                    value={joinCode}
+                    onChange={(e) => { setJoinCode(e.target.value); setJoinCodeError(""); }}
+                    onKeyDown={(e) => e.key === "Enter" && handleJoinByCode()}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleJoinByCode}
+                    className="rounded-2xl bg-foreground px-4 py-3 text-sm font-medium text-background"
+                  >
+                    Join
+                  </button>
+                </div>
+                {joinCodeError && <p className="mt-2 text-xs text-red-600">{joinCodeError}</p>}
+              </div>
             </div>
           </div>
 
@@ -183,7 +215,7 @@ export default function DocumentsPage() {
                   <div>
                     <p className="font-medium">{doc.title}</p>
                     <p className="text-xs text-(--muted)">
-                      {doc.language} | Owner: {doc.ownerName}
+                      {doc.language} · Owner: {doc.ownerName} · Code: <span className="font-mono font-semibold">{String(doc.id).padStart(6, "0")}</span>
                     </p>
                   </div>
                   <div className="flex gap-2">

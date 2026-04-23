@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   apiBaseUrl,
   executeCode,
@@ -28,7 +28,8 @@ export default function EditorPage() {
 
   const [session, setSession] = useState<UserSession | null>(null);
   const [document, setDocument] = useState<DocumentResponse | null>(null);
-  const [joinName, setJoinName] = useState("Maya Chen");
+  const [joinName, setJoinName] = useState("");
+  const hasAutoJoined = useRef(false);
   const [stdout, setStdout] = useState("Output will appear here after execution.");
   const [stderr, setStderr] = useState("");
   const [runStatus, setRunStatus] = useState<"idle" | "running" | "success" | "timeout" | "error">("idle");
@@ -49,8 +50,35 @@ export default function EditorPage() {
     }
 
     setSession(existing);
+    setJoinName(existing.name);
     fetchDocument(existing.token);
   }, [documentId, router]);
+
+  // Auto-join once when document first loads
+  useEffect(() => {
+    if (!session || !document || hasAutoJoined.current) return;
+    hasAutoJoined.current = true;
+    sessionAction(session.token, document.id, "join", session.name)
+      .then((res) => setDocument((cur) => cur ? { ...cur, collaborators: res.activeCollaborators } : cur))
+      .catch(() => {});
+  }, [session, document]);
+
+  // Periodic ping every 15s + auto-leave on unmount
+  useEffect(() => {
+    if (!session || !document) return;
+    const token = session.token;
+    const name = session.name;
+    const docId = document.id;
+    const interval = setInterval(() => {
+      sessionAction(token, docId, "ping", name)
+        .then((res) => setDocument((cur) => cur ? { ...cur, collaborators: res.activeCollaborators } : cur))
+        .catch(() => {});
+    }, 15000);
+    return () => {
+      clearInterval(interval);
+      sessionAction(token, docId, "leave", name).catch(() => {});
+    };
+  }, [session?.token, document?.id]);
 
   const executionHistory = useMemo(() => document?.history || [], [document?.history]);
 
@@ -163,6 +191,8 @@ export default function EditorPage() {
     clearSession();
     router.replace("/login");
   }
+
+
 
   return (
     <main className="min-h-screen px-4 py-8 text-foreground sm:px-6 lg:px-8">
@@ -285,6 +315,13 @@ export default function EditorPage() {
 
             <div className="rounded-3xl border border-(--border) bg-white p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.26em] text-(--muted)">Session</p>
+              <div className="mt-3 rounded-2xl border border-(--border) bg-(--panel) px-4 py-3">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-(--muted)">Team code</p>
+                <p className="mt-1 font-mono text-2xl font-bold tracking-widest">
+                  {String(documentId).padStart(6, "0")}
+                </p>
+                <p className="mt-1 text-[11px] text-(--muted)">Share this code so teammates can join</p>
+              </div>
               <label className="mt-3 block space-y-2 text-sm">
                 <span className="text-(--muted)">Collaborator name</span>
                 <input
