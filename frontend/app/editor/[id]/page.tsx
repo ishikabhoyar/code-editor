@@ -7,7 +7,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import {
-  apiBaseUrl,
   executeCode,
   loadDocument,
   saveDocument,
@@ -322,12 +321,8 @@ export default function EditorPage() {
         <header className="flex flex-col gap-4 border-b border-(--border) pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-(--muted)">Editor</p>
-            <h1 className="mt-2 text-3xl font-semibold">{document?.title || "Loading..."}</h1>
-            <p className="mt-2 text-sm text-(--muted)">
-              Real-time collaborative code editor
-            </p>
-            <p className="mt-1 text-xs text-(--muted)">Status: {status}</p>
-            <p className="mt-1 text-xs text-(--muted)">Backend: {apiBaseUrl()}</p>
+            <h1 className="mt-1 text-2xl font-semibold">{document?.title || "Loading..."}</h1>
+            <p className="mt-1 text-xs text-(--muted)">{status}</p>
           </div>
 
           <div className="flex flex-wrap gap-2">
