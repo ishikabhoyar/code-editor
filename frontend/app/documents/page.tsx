@@ -47,17 +47,21 @@ export default function DocumentsPage() {
       return;
     }
 
+    const boilerplate: Record<string, string> = {
+      Java: 'public class Main {\n  public static void main(String[] args) {\n    System.out.println("Hello, World!");\n  }\n}',
+      JavaScript: 'console.log("Hello, World!");',
+      Python: 'print("Hello, World!")',
+      C: '#include <stdio.h>\n\nint main() {\n  printf("Hello, World!\\n");\n  return 0;\n}',
+      "C++": '#include <iostream>\nusing namespace std;\n\nint main() {\n  cout << "Hello, World!" << endl;\n  return 0;\n}',
+      HTML: '<!doctype html>\n<html>\n  <head><title>Hello</title></head>\n  <body><h1>Hello, World!</h1></body>\n</html>',
+    };
+
     try {
       setError("");
       const created = await createDocument(session.token, {
         title: title.trim() || `Document-${documents.length + 1}.java`,
         language,
-        content:
-          language === "Java"
-            ? "public class Main {\n  public static void main(String[] args) {\n    System.out.println(\"Hello\");\n  }\n}"
-            : language === "HTML"
-              ? "<!doctype html>\n<html><body><h1>Hello</h1></body></html>"
-              : "console.log('Hello');",
+        content: boilerplate[language] ?? "",
       });
 
       setDocuments((current) => [created, ...current]);
