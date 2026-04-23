@@ -44,3 +44,5 @@ If you see fetch errors on login/documents/editor:
 2. Confirm backend CORS includes frontend origin.
 3. Confirm backend has valid datasource/JWT env values.
 4. Check browser devtools network tab for blocked requests.
+
+##
