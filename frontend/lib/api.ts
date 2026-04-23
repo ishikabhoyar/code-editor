@@ -2,12 +2,17 @@ import {
   AuthResponse,
   DocumentResponse,
   ExecutionResponse,
+  SandboxResultResponse,
+  SandboxSubmitResponse,
   SessionResponse,
   TokenValidationResponse,
 } from "./types";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:17808";
+
+const SANDBOX_BASE_URL =
+  process.env.NEXT_PUBLIC_SANDBOX_URL || "https://monacoapi.swdc.somaiya.edu";
 
 function toMessage(errorBody: unknown, fallback: string): string {
   if (errorBody && typeof errorBody === "object" && "message" in errorBody) {
@@ -154,4 +159,67 @@ export function executeCode(
 
 export function apiBaseUrl() {
   return API_BASE_URL;
+}
+
+// ── Monaco Sandbox API (monacoapi.swdc.somaiya.edu) ────────────────────────
+
+function toSandboxLanguage(lang: string): string {
+  switch (lang) {
+    case "Java": return "java";
+    case "JavaScript": return "javascript";
+    default: return lang.toLowerCase();
+  }
+}
+
+export async function sandboxSubmit(payload: {
+  code: string;
+  language: string;
+  input?: string;
+}): Promise<SandboxSubmitResponse> {
+  const response = await fetch(`${SANDBOX_BASE_URL}/api/submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code: payload.code,
+      language: toSandboxLanguage(payload.language),
+      input: payload.input ?? "",
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(`Sandbox submission failed with status ${response.status}`);
+  }
+  return response.json() as Promise<SandboxSubmitResponse>;
+}
+
+export async function sandboxGetResult(id: string): Promise<SandboxResultResponse> {
+  const response = await fetch(`${SANDBOX_BASE_URL}/api/result/${id}`);
+  if (!response.ok) {
+    throw new Error(`Sandbox result fetch failed with status ${response.status}`);
+  }
+  return response.json() as Promise<SandboxResultResponse>;
+}
+
+/**
+ * Submit code to the sandbox and poll until execution completes or times out.
+ * Resolves with the final SandboxResultResponse.
+ */
+export async function runInSandbox(
+  code: string,
+  language: string,
+  input?: string,
+  pollIntervalMs = 1000,
+  timeoutMs = 30000,
+): Promise<SandboxResultResponse> {
+  const { id } = await sandboxSubmit({ code, language, input });
+
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const result = await sandboxGetResult(id);
+    if (result.status === "completed" || result.status === "failed") {
+      return result;
+    }
+    await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+  }
+
+  throw new Error("Sandbox execution timed out");
 }

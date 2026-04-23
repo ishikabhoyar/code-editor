@@ -10,6 +10,7 @@ import {
   apiBaseUrl,
   executeCode,
   loadDocument,
+  runInSandbox,
   saveDocument,
   sessionAction,
 } from "../../../lib/api";
@@ -263,26 +264,32 @@ export default function EditorPage() {
     try {
       setError("");
       setRunStatus("running");
-      setStdout("Running in backend sandbox...");
+      setStdout("Running in sandbox...");
       setStderr("");
-      const execution = await executeCode(session.token, document.id, {
-        language: document.language,
-        code: editorRef.current?.getValue() ?? document.content,
-        timeoutSeconds: 5,
-      });
-      setRunStatus(execution.status);
-      setStdout(execution.stdout || "");
-      setStderr(execution.stderr || "");
-      setStatus(
-        execution.status === "success"
-          ? "Execution successful."
-          : execution.status === "timeout"
-            ? "Execution timed out."
-            : "Execution failed.",
+
+      const result = await runInSandbox(
+        editorRef.current?.getValue() ?? document.content,
+        document.language,
       );
+
+      const succeeded = result.status === "completed";
+      setRunStatus(succeeded ? "success" : "error");
+      setStdout(result.output || "");
+      setStderr("");
+      setStatus(succeeded ? "Execution successful." : "Execution failed.");
+
+      // Record in history using a compatible ExecutionResponse shape
+      const historyEntry: ExecutionResponse = {
+        executionId: result.id,
+        status: succeeded ? "success" : "error",
+        stdout: result.output || "",
+        stderr: "",
+        durationMs: Math.round((result.executionTime ?? 0) * 1000),
+        executedAt: result.completedAt || new Date().toISOString(),
+      };
       setDocument((current) => {
         if (!current) return current;
-        return { ...current, history: [execution, ...current.history] };
+        return { ...current, history: [historyEntry, ...current.history] };
       });
     } catch (runError) {
       setRunStatus("error");

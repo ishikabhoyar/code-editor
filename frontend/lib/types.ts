@@ -45,3 +45,25 @@ export type UserSession = {
   name: string;
   email: string;
 };
+
+// Monaco sandbox types (Go backend at monacoapi.swdc.somaiya.edu)
+export type SandboxSubmitResponse = {
+  id: string;
+  status: string;
+  message: string;
+};
+
+export type SandboxResultResponse = {
+  id: string;
+  code: string;
+  language: string;
+  input: string;
+  status: string; // "queued" | "running" | "completed" | "failed"
+  queuedAt: string;
+  startedAt: string;
+  completedAt: string;
+  output: string;
+  memory: string;
+  cpu: string;
+  executionTime: number;
+};
